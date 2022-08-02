@@ -3,3 +3,4 @@ poex/
 __pycache__/
 migrations/
 *.pyc
+test.py
