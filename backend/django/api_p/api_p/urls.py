@@ -20,5 +20,6 @@ from poe_snapsht import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/<account_name>', views.CharList.as_view()),
-    path('api/<account_name>/<character>', views.SnapShotsList.as_view())
+    path('api/<account_name>/<character>', views.SnapShotsList.as_view()),
+    path('api/<account_name>/edit/', views.CharCrtUpdDel.as_view()),
 ]
