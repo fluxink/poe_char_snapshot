@@ -5,15 +5,15 @@ from urllib.parse import quote
 request_headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
 }
-
+char_headres = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36',
+    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+}
 
 def get_character_list(account):
-    url = 'https://www.pathofexile.com/character-window/get-characters'
-    payload = {
-        'accountName': account,
-        'realm': 'pc'
-    }
-    request = requests.post(url, payload, headers=request_headers)
+    url = f'https://www.pathofexile.com/character-window/get-characters?accountName={account}&realm=pc'
+
+    request = requests.get(url, headers=request_headers)
     if request.status_code != requests.codes.ok:
         raise Exception(f'get_character_list response status code:{request.status_code}')
     return request.json()
