@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework import mixins
@@ -7,6 +8,7 @@ from rest_framework import permissions
 from .models import SnapShots, Characters, Accounts
 from .serializers import CharSerializer, SnapShotSerializer
 from .permissions import IsOwnerOrCreateOnly
+from .modules import parse
 
 
 class SnapShotsList(APIView):
@@ -18,6 +20,24 @@ class SnapShotsList(APIView):
         serializer = SnapShotSerializer(snapshots, many=True)
 
         return Response(serializer.data)
+
+class GetCharsNames(APIView):
+
+    def post(self, request):
+        account_name = request.data.get('account_name')
+        characters = parse.get_character_list(account_name)
+        characters_names = []
+        for char in characters:
+            lvl = char.get('level')
+            name = char.get('name')
+            char_class = char.get('class')
+            characters_names.append({
+                'level': lvl,
+                'name': name,
+                'class': char_class
+            })
+        json_chars = json.dumps(characters_names)
+        return Response(json_chars)
 
 
 class CharList(APIView):
