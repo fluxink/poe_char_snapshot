@@ -2,7 +2,7 @@
     <div class="get-snapshots">
         <h3>Get Snapshots</h3>
         <button @click="clearAccount">X</button>
-        <input v-if="characters.length == 0" type="text" placeholder="PoE Account" v-model="account">
+        <input v-if="characters.length == 0" v-model="account" type="text" placeholder="PoE Account">
         <input v-else v-model="account" type="text" disabled>
         <button v-if="characters.length == 0" @click="fetchSavedCharacters">Get saved characters</button>
         <select v-if="characters.length >= 1" v-model="selected_character">
@@ -13,14 +13,32 @@
         </select>
         <button v-if="characters.length >= 1" @click="fetchCharacterSnapshots">Retrive</button>
     </div>
+    <div v-if="snapshots.length >= 1">
+        <apexchart width="500" type="bar" :options="chart_options" :series="snapshots"></apexchart>
+    </div>
+    <character-inventory v-if="items.length > 1" :items="items"/>
+
 </template>
 <script>
+import SnapshotChart from "@/components/SnapshotChart.vue"
+import VueApexCharts from "vue3-apexcharts"
+import CharacterInventory from "@/components/CharacterInventory.vue"
+import "@/modules/processSnapshots.js"
+
 export default {
+    components: {
+        SnapshotChart,
+        apexchart: VueApexCharts,
+        CharacterInventory
+    },
     data(){
         return {
             account: "",
             characters: [],
-            selected_character: ""
+            selected_character: "",
+            snapshots: [],
+            chart_options: [],
+            items: []
         }
     },
     methods: {
@@ -44,6 +62,25 @@ export default {
             })
             let result = await response.json()
             console.log(result)
+
+            let labels = []
+            let exp = []
+            for (let snapshot of result){
+                console.log(snapshot)
+                labels.push(snapshot.time)
+                exp.push(snapshot.character_info.experience)
+            }
+
+            this.chart_options = {
+                xaxis: {
+                    categories: labels
+                }
+            }
+            this.snapshots = [{
+                name: 'Expirience',
+                data: exp
+            }]
+            this.items = result[0].items
         }
     }
 }

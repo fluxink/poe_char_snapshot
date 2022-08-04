@@ -2,17 +2,20 @@
     <div>
         <fetch-account></fetch-account>
         <get-snapshots></get-snapshots>
+        <!-- <character-inventory/> -->
     </div>
 </template>
 
 <script>
 import FetchAccount from "@/components/FetchAccount.vue"
 import GetSnapshots from "@/components/GetSnapshots.vue"
+import CharacterInventory from "@/components/CharacterInventory.vue"
 
 export default {
     components: {
         FetchAccount,
-        GetSnapshots
+        GetSnapshots,
+        CharacterInventory,
     }
 }
 </script>
