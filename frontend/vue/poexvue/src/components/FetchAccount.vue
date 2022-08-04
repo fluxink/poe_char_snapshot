@@ -6,6 +6,7 @@
         <input v-else v-model="account_name" type="text" disabled>
         <button v-if="characters.length == 0" @click="fetchCharacters">Go</button>
         <select v-if="characters.length >= 1" v-model="selected_char">
+            <option disabled value="">Select Character</option>
             <option v-for="character in characters" :value="character">
                 {{character.league}} {{ character.level }}, {{character.name}}, {{character.class}}
             </option>
