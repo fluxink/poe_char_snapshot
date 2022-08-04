@@ -4,7 +4,7 @@
             <img :src="item.icon" alt="">
         </div>
     </div>
-    <div v-show="upHere" class="ItemInfo">
+    <div v-show="upHere" :class="item_info_class + item.inventoryId + item_class_prefix">
         <h3>{{item.name}}</h3>
         <h3>{{item.typeLine}}</h3>
         <br v-if="item.implicitMods">
@@ -19,7 +19,9 @@ export default {
     data(){
         return {
             upHere: false,
-            item_class: "ItemContainer "
+            item_class: "ItemContainer ",
+            item_info_class: "ItemInfo ",
+            item_class_prefix: "Info"
         }
     }
 }
@@ -38,5 +40,8 @@ export default {
     .ItemInfo {
         background-color: burlywood;
         z-index: 99;
+        position: absolute;
+        width: max-content;
+        text-align: center;
     }
 </style>
