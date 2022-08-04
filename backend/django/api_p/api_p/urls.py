@@ -22,5 +22,6 @@ urlpatterns = [
     path('api/get/<account_name>', views.CharList.as_view()),
     path('api/get/<account_name>/<character>', views.SnapShotsList.as_view()),
     path('api/edit/<account_name>', views.CharCrtUpdDel.as_view()),
-    path('api/get-characters', views.GetCharsNames.as_view())
+    path('api/get-characters', views.GetCharsNames.as_view()),
+    path('api/create-snapshots', views.CreateSnapshots.as_view())
 ]

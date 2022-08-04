@@ -9,6 +9,7 @@ from .models import SnapShots, Characters, Accounts
 from .serializers import CharSerializer, SnapShotSerializer
 from .permissions import IsOwnerOrCreateOnly
 from .modules import parse
+from .management.commands import fetchchars
 
 
 class SnapShotsList(APIView):
@@ -80,3 +81,10 @@ class CharCrtUpdDel(mixins.CreateModelMixin,
         obj = queryset.get(character=self.request.POST.get('character'))
         self.check_object_permissions(self.request, obj)
         return obj
+
+class CreateSnapshots(APIView):
+
+    def get(self, request):
+        t = fetchchars.Command()
+        t.handle()
+        return Response('Started')
