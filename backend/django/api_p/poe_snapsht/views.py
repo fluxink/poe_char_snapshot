@@ -23,7 +23,7 @@ class SnapShotsList(APIView):
 
 class GetCharsNames(APIView):
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         account_name = request.data.get('account_name')
         characters = parse.get_character_list(account_name)
         characters_names = []
@@ -31,10 +31,12 @@ class GetCharsNames(APIView):
             lvl = char.get('level')
             name = char.get('name')
             char_class = char.get('class')
+            league = char.get('league')
             characters_names.append({
                 'level': lvl,
                 'name': name,
-                'class': char_class
+                'class': char_class,
+                'league': league
             })
         json_chars = json.dumps(characters_names)
         return Response(json_chars)
@@ -57,8 +59,8 @@ class CharCrtUpdDel(mixins.CreateModelMixin,
                     generics.GenericAPIView):
     queryset = Characters.objects.all()
     serializer_class = CharSerializer
-    permission_classes = (permissions.IsAuthenticated,
-                        IsOwnerOrCreateOnly)
+    # permission_classes = (permissions.IsAuthenticated,
+    #                     IsOwnerOrCreateOnly)
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
