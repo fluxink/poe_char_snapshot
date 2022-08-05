@@ -26,7 +26,7 @@ async def get_char(session, char):
     async with session.post(url=url_info_items, data=payload) as resp:
         info_items = await resp.json()
         items = info_items.pop('items')
-        info = info_items
+        info = info_items.pop('character')
     async with session.get(url=url_passives) as resp:
         passives = await resp.json()
     print(f'Character {char[1]} fetched successfuly')
