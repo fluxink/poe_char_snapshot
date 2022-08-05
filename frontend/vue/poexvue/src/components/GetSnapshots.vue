@@ -13,17 +13,22 @@
         </select>
         <button v-if="characters.length >= 1" @click="fetchCharacterSnapshots">Retrive</button>
     </div>
-    <div v-if="snapshots.length >= 1">
-        <apexchart width="500" type="bar" :options="chart_options" :series="snapshots"></apexchart>
+    <div v-if="snapshots.length > 1">
+        <apexchart @mounted="selectFirst" @dataPointSelection="selectSnapshot" ref="chart" width="500" type="bar" :options="chart_options" :series="chart_data"></apexchart>
+        <div>
+            <button @click="prevSnapshot">Previous</button>
+            <span>{{snapshots[current_snapshot_number].time}}</span>
+            <button @click="nextSnapshot">Next</button>
+        </div>
     </div>
-    <character-inventory v-if="items.length > 1" :items="items"/>
+    <character-inventory v-if="snapshots.length >= 1" :items="snapshots[current_snapshot_number].items"/>
 
 </template>
 <script>
 import SnapshotChart from "@/components/SnapshotChart.vue"
 import VueApexCharts from "vue3-apexcharts"
 import CharacterInventory from "@/components/CharacterInventory.vue"
-import "@/modules/processSnapshots.js"
+import * as MyUtils from "@/modules/myutils.js"
 
 export default {
     components: {
@@ -35,10 +40,12 @@ export default {
         return {
             account: "",
             characters: [],
-            selected_character: "",
             snapshots: [],
+            selected_character: "",
+            chart_data: [],
             chart_options: [],
-            items: []
+            items: [],
+            current_snapshot_number: 0
         }
     },
     methods: {
@@ -63,26 +70,50 @@ export default {
             let result = await response.json()
             console.log(result)
 
-            let labels = []
-            let exp = []
-            for (let snapshot of result){
-                console.log(snapshot)
-                labels.push(snapshot.time)
-                exp.push(snapshot.character_info.experience)
-            }
-
+            let data = MyUtils.getTimeAndExp(result)
             this.chart_options = {
                 xaxis: {
-                    categories: labels
-                }
+                    type: 'datetime',
+                    categories: data[0]
+                },
+                yaxis: {
+                    labels: {
+                        formatter: MyUtils.numberWithCommas
+                        }
+                    },
             }
-            this.snapshots = [{
+
+            this.chart_data = [{
                 name: 'Expirience',
-                data: exp
+                data: data[1]
             }]
-            this.items = result[0].items
+            this.snapshots = result
+        },
+        nextSnapshot(e){
+            if (this.current_snapshot_number == this.snapshots.length - 1){
+                this.current_snapshot_number = 0
+            }
+            else {
+                this.current_snapshot_number++
+            }
+            this.$refs.chart.toggleDataPointSelection(0, this.current_snapshot_number)
+        },
+        prevSnapshot(e){
+            if (this.current_snapshot_number == 0){
+                this.current_snapshot_number = this.snapshots.length - 1
+            }
+            else {
+                this.current_snapshot_number--
+            }
+            this.$refs.chart.toggleDataPointSelection(0, this.current_snapshot_number)
+        },
+        selectFirst(e){
+            this.$refs.chart.toggleDataPointSelection(0, 0)
+        },
+        selectSnapshot(event, chartContext, config){
+            this.current_snapshot_number = config.selectedDataPoints
         }
-    }
+    },
 }
 </script>
 <style scoped>
