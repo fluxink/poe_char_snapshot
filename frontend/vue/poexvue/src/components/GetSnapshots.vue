@@ -13,26 +13,14 @@
         </select>
         <button v-if="characters.length >= 1" @click="fetchCharacterSnapshots">Retrive</button>
     </div>
-    <div v-if="snapshots.length > 1">
-        <apexchart @mounted="selectFirst" @dataPointSelection="selectSnapshot" ref="chart" width="500" type="bar" :options="chart_options" :series="chart_data"></apexchart>
-        <div>
-            <button @click="prevSnapshot">Previous</button>
-            <span>{{snapshots[current_snapshot_number].time}}</span>
-            <button @click="nextSnapshot">Next</button>
-        </div>
-    </div>
-    <character-inventory v-if="snapshots.length >= 1" :items="snapshots[current_snapshot_number].items"/>
-
 </template>
 <script>
-import SnapshotChart from "@/components/SnapshotChart.vue"
 import VueApexCharts from "vue3-apexcharts"
 import CharacterInventory from "@/components/CharacterInventory.vue"
 import * as MyUtils from "@/modules/myutils.js"
 
 export default {
     components: {
-        SnapshotChart,
         apexchart: VueApexCharts,
         CharacterInventory
     },
@@ -44,8 +32,6 @@ export default {
             selected_character: "",
             chart_data: [],
             chart_options: [],
-            items: [],
-            current_snapshot_number: 0
         }
     },
     methods: {
@@ -99,32 +85,14 @@ export default {
                 data: data[1]
             }]
             this.snapshots = result
+            
         },
-        nextSnapshot(e){
-            if (this.current_snapshot_number == this.snapshots.length - 1){
-                this.current_snapshot_number = 0
-            }
-            else {
-                this.current_snapshot_number++
-            }
-            this.$refs.chart.toggleDataPointSelection(0, this.current_snapshot_number)
-        },
-        prevSnapshot(){
-            if (this.current_snapshot_number == 0){
-                this.current_snapshot_number = this.snapshots.length - 1
-            }
-            else {
-                this.current_snapshot_number--
-            }
-            this.$refs.chart.toggleDataPointSelection(0, this.current_snapshot_number)
-        },
-        selectFirst(event, chartContext, config){
-            this.$refs.chart.toggleDataPointSelection(0, 0)
-        },
-        selectSnapshot(event, chartContext, config){
-            this.current_snapshot_number = config.selectedDataPoints
-        }
     },
+    watch: {
+        snapshots(newValue){
+            this.$emit("update:modelValue", newValue)
+        }
+    }
 }
 </script>
 <style scoped>
