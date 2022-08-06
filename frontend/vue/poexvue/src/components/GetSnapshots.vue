@@ -62,6 +62,8 @@ export default {
         clearAccount(e){
             this.account = ""
             this.characters = []
+            this.snapshots = []
+            this.current_snapshot_number = 0
         },
         async fetchCharacterSnapshots(e){
             let response = await fetch("http://127.0.0.1:8000/api/get/" + this.account + "/" + this.selected_character, {
@@ -73,14 +75,23 @@ export default {
             let data = MyUtils.getTimeAndExp(result)
             this.chart_options = {
                 xaxis: {
-                    type: 'datetime',
-                    categories: data[0]
+                    type: 'category',
+                    categories: data[0],
                 },
                 yaxis: {
                     labels: {
                         formatter: MyUtils.numberWithCommas
                         }
                     },
+                chart: {
+                    toolbar: {
+                        show: false
+                    },
+                },
+                title: {
+                    text: 'Snapshots',
+                    align: 'center'
+                }
             }
 
             this.chart_data = [{
@@ -98,7 +109,7 @@ export default {
             }
             this.$refs.chart.toggleDataPointSelection(0, this.current_snapshot_number)
         },
-        prevSnapshot(e){
+        prevSnapshot(){
             if (this.current_snapshot_number == 0){
                 this.current_snapshot_number = this.snapshots.length - 1
             }
@@ -107,7 +118,7 @@ export default {
             }
             this.$refs.chart.toggleDataPointSelection(0, this.current_snapshot_number)
         },
-        selectFirst(e){
+        selectFirst(event, chartContext, config){
             this.$refs.chart.toggleDataPointSelection(0, 0)
         },
         selectSnapshot(event, chartContext, config){

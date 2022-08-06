@@ -19,7 +19,8 @@ function getTimeAndExp(array){
     let time = []
     let exp = []
     for (let item of array){
-        time.push(Date.parse(item.time))
+        let d = new Date(item.time)
+        time.push(d.toLocaleString('en-GB', {day: 'numeric', month: 'short'}))
         exp.push(item.character_info.experience)
     }
     let data = [time, exp]
