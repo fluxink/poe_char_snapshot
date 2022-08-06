@@ -2,8 +2,9 @@
     <div>
         <fetch-account/>
         <get-snapshots v-model="snapshots"/>
+    </div>
+    <div class="snapshots">
         <snapshot-detail v-if="snapshots.length > 0" :snapshots="snapshots" :chart_data="chart_data" :chart_options="chart_options" />
-        <!-- <character-inventory/> -->
     </div>
 </template>
 
@@ -63,5 +64,9 @@ export default {
 <style scoped>
     div {
         margin-top: 15px;
+    }
+    .snapshots {
+        grid-column-start: 1;
+        grid-column-end: 3;
     }
 </style>

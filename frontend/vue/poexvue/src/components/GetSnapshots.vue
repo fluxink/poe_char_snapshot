@@ -12,6 +12,7 @@
             </option>
         </select>
         <button v-if="characters.length >= 1" @click="fetchCharacterSnapshots">Retrive</button>
+        <span v-if="loading" >Loading...</span>
     </div>
 </template>
 <script>
@@ -32,10 +33,12 @@ export default {
             selected_character: "",
             chart_data: [],
             chart_options: [],
+            loading: false,
         }
     },
     methods: {
         async fetchSavedCharacters(e){
+            this.loading = true
             let response = await fetch("http://127.0.0.1:8000/api/get/" + this.account, {
                 method: "GET",
                 headers: {
@@ -44,6 +47,7 @@ export default {
             })
             let result = await response.json()
             this.characters = result
+            this.loading = false
         },
         clearAccount(e){
             this.account = ""
@@ -52,6 +56,7 @@ export default {
             this.current_snapshot_number = 0
         },
         async fetchCharacterSnapshots(e){
+            this.loading = true
             let response = await fetch("http://127.0.0.1:8000/api/get/" + this.account + "/" + this.selected_character, {
                 method: "GET"
             })
@@ -85,7 +90,7 @@ export default {
                 data: data[1]
             }]
             this.snapshots = result
-            
+            this.loading = false
         },
     },
     watch: {
