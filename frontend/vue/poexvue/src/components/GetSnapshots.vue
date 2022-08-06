@@ -25,14 +25,12 @@
 
 </template>
 <script>
-import SnapshotChart from "@/components/SnapshotChart.vue"
 import VueApexCharts from "vue3-apexcharts"
 import CharacterInventory from "@/components/CharacterInventory.vue"
 import * as MyUtils from "@/modules/myutils.js"
 
 export default {
     components: {
-        SnapshotChart,
         apexchart: VueApexCharts,
         CharacterInventory
     },
