@@ -19,7 +19,7 @@ class Characters(models.Model):
         return self.character
 
 class SnapShots(models.Model):
-    character_id = models.ForeignKey(Characters, on_delete=models.CASCADE)
+    character = models.ForeignKey(Characters, on_delete=models.CASCADE)
     character_info = models.JSONField()
     items = models.JSONField()
     passives = models.JSONField()
