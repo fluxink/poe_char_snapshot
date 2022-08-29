@@ -53,6 +53,6 @@ def _fetch_import_code_from_xml(xml: str) -> bytes:
 
     :return: Compressed XML build document."""
 
-    base64_encode = base64.urlsafe_b64encode(xml.encode('utf-8'))
-    compressed_xml = zlib.compress(base64_encode)
-    return compressed_xml
+    compressed_xml = zlib.compress(xml.encode('utf-8'))
+    base64_encode = base64.urlsafe_b64encode(compressed_xml)
+    return base64_encode.decode('utf-8')
