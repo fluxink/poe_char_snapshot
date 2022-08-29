@@ -34,4 +34,5 @@ def read_xmls():
         print(file)
         with open(os.path.join(POB_SRC, file), 'r') as f:
             xmls.append(f.read())
+        os.remove(os.path.join(POB_SRC, file))
     return xmls
