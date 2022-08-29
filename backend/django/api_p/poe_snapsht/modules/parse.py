@@ -4,8 +4,8 @@ import asyncio
 import base64
 import zlib
 import json
+from lxml.etree import fromstring
 from poe_snapsht.modules.PoB_json_to_xml import get_pob_xmls
-# import pobapi
 
 request_headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
@@ -35,7 +35,13 @@ async def get_char(session, char) -> tuple:
     async with session.get(url=url_passives) as resp:
         passives = await resp.json()
     print(f'Character {char[1]} fetched successfuly')
-    return [char, info, items, passives, info_items]
+    return {
+        'char': char,
+        'info': info,
+        'items': items,
+        'passives': passives,
+        'info_items': info_items
+    }
 
 async def start_fetch(char_list):
     tasks = []
@@ -43,9 +49,10 @@ async def start_fetch(char_list):
         for char in char_list:
             tasks.append(get_char(client, char))
         results = await asyncio.gather(*tasks)
-    char_xmls = get_pob_xmls([[json.dumps(i.pop(4)), json.dumps(i[3])] for i in results])
+    char_xmls = get_pob_xmls([[json.dumps(i.pop('info_items')), json.dumps(i['passives'])] for i in results])
     for char, xml in zip(results, char_xmls):
-        char.append(_fetch_import_code_from_xml(xml))
+        char['xml_code'] = _fetch_import_code_from_xml(xml)
+        char['stats'] = json.dumps(_fetch_stats(xml.encode('utf-8')))
     return results
 
 def _fetch_import_code_from_xml(xml: str) -> bytes:
@@ -56,3 +63,22 @@ def _fetch_import_code_from_xml(xml: str) -> bytes:
     compressed_xml = zlib.compress(xml.encode('utf-8'))
     base64_encode = base64.urlsafe_b64encode(compressed_xml)
     return base64_encode.decode('utf-8')
+
+def _fetch_stats(xml: str):
+    xml = fromstring(xml)
+    stats = {
+    'full_dps': xml.find("Build").find("PlayerStat[@stat='FullDPS']").get('value'),
+    'chaos_resist': xml.find("Build").find("PlayerStat[@stat='ChaosResist']").get('value'),
+    'lightning_resist': xml.find("Build").find("PlayerStat[@stat='LightningResist']").get('value'),
+    'cold_resist': xml.find("Build").find("PlayerStat[@stat='ColdResist']").get('value'),
+    'fire_resist': xml.find("Build").find("PlayerStat[@stat='FireResist']").get('value'),
+    'armour': xml.find("Build").find("PlayerStat[@stat='Armour']").get('value'),
+    'evasion': xml.find("Build").find("PlayerStat[@stat='Evasion']").get('value'),
+    'energy_shield': xml.find("Build").find("PlayerStat[@stat='EnergyShield']").get('value'),
+    'mana': xml.find("Build").find("PlayerStat[@stat='Mana']").get('value'),
+    'life': xml.find("Build").find("PlayerStat[@stat='Life']").get('value'),
+    'str': xml.find("Build").find("PlayerStat[@stat='Str']").get('value'),
+    'dex': xml.find("Build").find("PlayerStat[@stat='Dex']").get('value'),
+    'int': xml.find("Build").find("PlayerStat[@stat='Int']").get('value'),
+    }
+    return stats

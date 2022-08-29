@@ -11,6 +11,7 @@ class SnapShotSerializer(serializers.Serializer):
     character_info = serializers.JSONField()
     items = serializers.JSONField()
     passives =  serializers.JSONField()
+    xml_code = serializers.CharField()
     time = serializers.DateTimeField()
 
 class CharSerializer(serializers.Serializer):
@@ -28,10 +29,11 @@ class CharSerializer(serializers.Serializer):
             chars = asyncio.run(parse.start_fetch(((account[0].account_name, obj.character),)))
             for char in chars:
                 SnapShots.objects.create(character=obj,
-                    character_info=char[1],
-                    items=char[2],
-                    passives=char[3],
-                    xml_code=char[4]
+                    character_info=char['info'],
+                    items=char['items'],
+                    passives=char['passives'],
+                    xml_code=char['xml_code'],
+                    stats=char['stats']
                 )
         return obj
 
