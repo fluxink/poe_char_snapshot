@@ -4,7 +4,7 @@ import asyncio
 import base64
 import zlib
 import json
-from PoB_json_to_xml import get_pob_xmls
+from poe_snapsht.modules.PoB_json_to_xml import get_pob_xmls
 # import pobapi
 
 request_headers = {
@@ -30,12 +30,12 @@ async def get_char(session, char) -> tuple:
     url_passives = f'https://www.pathofexile.com/character-window/get-passive-skills?reqData=0&accountName={char[0]}&realm=pc&character={char[1]}'
     async with session.post(url=url_info_items, data=payload) as resp:
         info_items = await resp.json()
-        items = info_items.pop('items')
-        info = info_items.pop('character')
+        items = info_items['items']
+        info = info_items['character']
     async with session.get(url=url_passives) as resp:
         passives = await resp.json()
     print(f'Character {char[1]} fetched successfuly')
-    return (char, info, items, passives, info_items)
+    return [char, info, items, passives, info_items]
 
 async def start_fetch(char_list):
     tasks = []
@@ -43,9 +43,9 @@ async def start_fetch(char_list):
         for char in char_list:
             tasks.append(get_char(client, char))
         results = await asyncio.gather(*tasks)
-    char_xmls = get_pob_xmls([[json.dumps(i[3]), json.dumps(i.pop(4))] for i in results])
+    char_xmls = get_pob_xmls([[json.dumps(i.pop(4)), json.dumps(i[3])] for i in results])
     for char, xml in zip(results, char_xmls):
-        char[4] = _fetch_import_code_from_xml(xml)
+        char.append(_fetch_import_code_from_xml(xml))
     return results
 
 def _fetch_import_code_from_xml(xml: str) -> bytes:
@@ -53,6 +53,6 @@ def _fetch_import_code_from_xml(xml: str) -> bytes:
 
     :return: Compressed XML build document."""
 
-    base64_encode = base64.urlsafe_b64encode(xml)
+    base64_encode = base64.urlsafe_b64encode(xml.encode('utf-8'))
     compressed_xml = zlib.compress(base64_encode)
     return compressed_xml
