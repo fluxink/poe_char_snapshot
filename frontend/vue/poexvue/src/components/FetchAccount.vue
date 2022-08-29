@@ -12,6 +12,7 @@
             </option>
         </select>
         <button v-if="selected_char != ''" @click="trackCharacter">Track</button>
+        <p v-if="message">{{message}}</p>
     </div>
 </template>
 
@@ -21,11 +22,13 @@ export default {
         return {
             account_name: "",
             characters: [],
-            selected_char: ""
+            selected_char: "",
+            message: false,
         }
     },
     methods: {
         async fetchCharacters(e){
+            this.message = false
             let response = await fetch("http://127.0.0.1:8000/api/get-characters", {
                 method: "POST",
                 headers: {
@@ -34,15 +37,21 @@ export default {
                 body: JSON.stringify({account_name: this.account_name})
             })
             let result = await response.json()
-            
-            this.characters = JSON.parse(result)
+            if (result.startsWith('Status')){
+                this.message = result
+            }
+            else {
+                this.characters = JSON.parse(result)
+            }
         },
-        clearAccount(e){
+        clearAccount(){
             this.account_name = ""
             this.characters = []
+            this.selected_char = ""
+            this.message = false
         },
-        async trackCharacter(e){
-            let request = await fetch("http://127.0.0.1:8000/api/edit/" + this.account_name, {
+        async trackCharacter(){
+            let request = await fetch("http://127.0.0.1:8000/api/characters/" + this.account_name, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
@@ -56,6 +65,9 @@ export default {
                     tracked: true
                 })
             })
+            if (request.ok) {
+                this.message = "Character now tracked"
+            }
         }
     }
 }

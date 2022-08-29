@@ -12,7 +12,7 @@
             </option>
         </select>
         <button v-if="characters.length >= 1" @click="fetchCharacterSnapshots">Retrive</button>
-        <span v-if="loading" >Loading...</span>
+        <p v-if="message">{{message}}</p>
     </div>
 </template>
 <script>
@@ -33,64 +33,72 @@ export default {
             selected_character: "",
             chart_data: [],
             chart_options: [],
-            loading: false,
+            message: false,
         }
     },
     methods: {
-        async fetchSavedCharacters(e){
-            this.loading = true
-            let response = await fetch("http://127.0.0.1:8000/api/get/" + this.account, {
+        async fetchSavedCharacters(){
+            this.message = "Loading..."
+            let response = await fetch("http://127.0.0.1:8000/api/accounts/" + this.account, {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json'
                 },
             })
-            let result = await response.json()
-            this.characters = result
-            this.loading = false
+            if (response.ok) {
+                let result = await response.json()
+                this.characters = result
+                this.message = false
+            }
+            else {
+                this.message = response.statusText
+            }
         },
-        clearAccount(e){
+        clearAccount(){
             this.account = ""
             this.characters = []
             this.snapshots = []
             this.current_snapshot_number = 0
         },
-        async fetchCharacterSnapshots(e){
-            this.loading = true
-            let response = await fetch("http://127.0.0.1:8000/api/get/" + this.account + "/" + this.selected_character, {
+        async fetchCharacterSnapshots(){
+            this.message = "Loading..."
+            let response = await fetch("http://127.0.0.1:8000/api/snapshots/" + this.selected_character, {
                 method: "GET"
             })
-            let result = await response.json()
-            console.log(result)
-
-            let data = MyUtils.getTimeAndExp(result)
-            this.chart_options = {
-                xaxis: {
-                    type: 'category',
-                    categories: data[0],
-                },
-                yaxis: {
-                    labels: {
-                        formatter: MyUtils.numberWithCommas
-                        }
+            if (response.ok) {
+                let result = await response.json()
+                this.message = false
+                let data = MyUtils.getTimeAndExp(result)
+                this.chart_options = {
+                    xaxis: {
+                        type: 'category',
+                        categories: data[0],
                     },
-                chart: {
-                    toolbar: {
-                        show: false
+                    yaxis: {
+                        labels: {
+                            formatter: MyUtils.numberWithCommas
+                            }
+                        },
+                    chart: {
+                        toolbar: {
+                            show: false
+                        },
                     },
-                },
-                title: {
-                    text: 'Snapshots',
-                    align: 'center'
+                    title: {
+                        text: 'Snapshots',
+                        align: 'center'
+                    }
                 }
-            }
 
-            this.chart_data = [{
-                name: 'Expirience',
-                data: data[1]
-            }]
-            this.snapshots = result
-            this.loading = false
+                this.chart_data = [{
+                    name: 'Expirience',
+                    data: data[1]
+                }]
+                this.snapshots = result
+            }
+            else {
+                this.message = response.statusText
+            }
         },
     },
     watch: {
