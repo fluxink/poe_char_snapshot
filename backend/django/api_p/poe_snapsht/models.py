@@ -24,6 +24,7 @@ class SnapShots(models.Model):
     items = models.JSONField()
     passives = models.JSONField()
     xml_code = models.TextField(help_text='Path of Building xml code')
+    stats = models.JSONField()
     time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
