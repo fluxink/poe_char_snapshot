@@ -12,17 +12,8 @@
             </option>
         </select>
         <button v-if="characters.length >= 1" @click="fetchCharacterSnapshots">Retrive</button>
+        <p v-if="message">{{message}}</p>
     </div>
-    <div v-if="snapshots.length > 1">
-        <apexchart @mounted="selectFirst" @dataPointSelection="selectSnapshot" ref="chart" width="500" type="bar" :options="chart_options" :series="chart_data"></apexchart>
-        <div>
-            <button @click="prevSnapshot">Previous</button>
-            <span>{{snapshots[current_snapshot_number].time}}</span>
-            <button @click="nextSnapshot">Next</button>
-        </div>
-    </div>
-    <character-inventory v-if="snapshots.length >= 1" :items="snapshots[current_snapshot_number].items"/>
-
 </template>
 <script>
 import VueApexCharts from "vue3-apexcharts"
@@ -42,87 +33,79 @@ export default {
             selected_character: "",
             chart_data: [],
             chart_options: [],
-            items: [],
-            current_snapshot_number: 0
+            message: false,
         }
     },
     methods: {
-        async fetchSavedCharacters(e){
-            let response = await fetch("http://127.0.0.1:8000/api/get/" + this.account, {
+        async fetchSavedCharacters(){
+            this.message = "Loading..."
+            let response = await fetch("http://127.0.0.1:8000/api/accounts/" + this.account, {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json'
                 },
             })
-            let result = await response.json()
-            this.characters = result
+            if (response.ok) {
+                let result = await response.json()
+                this.characters = result
+                this.message = false
+            }
+            else {
+                this.message = response.statusText
+            }
         },
-        clearAccount(e){
+        clearAccount(){
             this.account = ""
             this.characters = []
             this.snapshots = []
             this.current_snapshot_number = 0
         },
-        async fetchCharacterSnapshots(e){
-            let response = await fetch("http://127.0.0.1:8000/api/get/" + this.account + "/" + this.selected_character, {
+        async fetchCharacterSnapshots(){
+            this.message = "Loading..."
+            let response = await fetch("http://127.0.0.1:8000/api/snapshots/" + this.selected_character, {
                 method: "GET"
             })
-            let result = await response.json()
-            console.log(result)
-
-            let data = MyUtils.getTimeAndExp(result)
-            this.chart_options = {
-                xaxis: {
-                    type: 'category',
-                    categories: data[0],
-                },
-                yaxis: {
-                    labels: {
-                        formatter: MyUtils.numberWithCommas
-                        }
+            if (response.ok) {
+                let result = await response.json()
+                this.message = false
+                let data = MyUtils.getTimeAndExp(result)
+                this.chart_options = {
+                    xaxis: {
+                        type: 'category',
+                        categories: data[0],
                     },
-                chart: {
-                    toolbar: {
-                        show: false
+                    yaxis: {
+                        labels: {
+                            formatter: MyUtils.numberWithCommas
+                            }
+                        },
+                    chart: {
+                        toolbar: {
+                            show: false
+                        },
                     },
-                },
-                title: {
-                    text: 'Snapshots',
-                    align: 'center'
+                    title: {
+                        text: 'Snapshots',
+                        align: 'center'
+                    }
                 }
-            }
 
-            this.chart_data = [{
-                name: 'Expirience',
-                data: data[1]
-            }]
-            this.snapshots = result
-        },
-        nextSnapshot(e){
-            if (this.current_snapshot_number == this.snapshots.length - 1){
-                this.current_snapshot_number = 0
+                this.chart_data = [{
+                    name: 'Expirience',
+                    data: data[1]
+                }]
+                this.snapshots = result
             }
             else {
-                this.current_snapshot_number++
+                this.message = response.statusText
             }
-            this.$refs.chart.toggleDataPointSelection(0, this.current_snapshot_number)
         },
-        prevSnapshot(){
-            if (this.current_snapshot_number == 0){
-                this.current_snapshot_number = this.snapshots.length - 1
-            }
-            else {
-                this.current_snapshot_number--
-            }
-            this.$refs.chart.toggleDataPointSelection(0, this.current_snapshot_number)
-        },
-        selectFirst(event, chartContext, config){
-            this.$refs.chart.toggleDataPointSelection(0, 0)
-        },
-        selectSnapshot(event, chartContext, config){
-            this.current_snapshot_number = config.selectedDataPoints
-        }
     },
+    watch: {
+        snapshots(newValue){
+            this.$emit("update:modelValue", newValue)
+        }
+    }
 }
 </script>
 <style scoped>

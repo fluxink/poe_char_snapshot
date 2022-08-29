@@ -1,5 +1,5 @@
 import json
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework import mixins
 from rest_framework import generics
@@ -27,6 +27,8 @@ class GetCharsNames(APIView):
     def post(self, request, *args, **kwargs):
         account_name = request.data.get('account_name')
         characters = parse.get_character_list(account_name)
+        if isinstance(characters, int):
+            return Response(f'Status code: {characters}')
         characters_names = []
         for char in characters:
             lvl = char.get('level')
@@ -77,8 +79,7 @@ class CharCrtUpdDel(mixins.CreateModelMixin,
 
     def get_object(self):
         queryset = self.filter_queryset(self.get_queryset())
-        # make sure to catch 404's below
-        obj = queryset.get(character=self.request.POST.get('character'))
+        obj = get_object_or_404(queryset, character=self.request.POST.get('character'))
         self.check_object_permissions(self.request, obj)
         return obj
 
