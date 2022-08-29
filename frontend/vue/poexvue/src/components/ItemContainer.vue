@@ -1,17 +1,11 @@
 <template>
-    <div :class="item_class + item.inventoryId" @mouseover="upHere = true" @mouseleave="upHere = false">
+<div class="item">
+    <div :class="item_class + item.inventoryId +' x'+ item.x" @mouseover="upHere = true" @mouseleave="upHere = false">
         <div class="itemIcon">
             <img :src="item.icon" alt="">
         </div>
     </div>
-    <div v-show="upHere" :class="item_info_class + item.inventoryId + item_class_prefix">
-        <h3>{{item.name}}</h3>
-        <h3>{{item.typeLine}}</h3>
-        <br v-if="item.implicitMods">
-        <p v-for="mode in item.implicitMods">{{mode}}</p>
-        <br v-if="item.implicitMods">
-        <p v-for="mode in item.explicitMods">{{mode}}</p>
-    </div>
+</div>
 </template>
 <script>
 export default {
@@ -40,8 +34,15 @@ export default {
     .ItemInfo {
         background-color: burlywood;
         z-index: 99;
-        position: absolute;
+        
         width: max-content;
         text-align: center;
+        /* inset: calc(100% * -2) 100px auto 0px; */
+        /* transform: translate(0px, -10%); */
+    }
+    .item .ItemInfo {
+        /* visibility: hidden; */
+        position: absolute;
+        transform: translate(0px, -50%);
     }
 </style>

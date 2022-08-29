@@ -19,10 +19,11 @@ class Characters(models.Model):
         return self.character
 
 class SnapShots(models.Model):
-    character_id = models.ForeignKey(Characters, on_delete=models.CASCADE)
+    character = models.ForeignKey(Characters, on_delete=models.CASCADE)
     character_info = models.JSONField()
     items = models.JSONField()
     passives = models.JSONField()
+    xml_code = models.TextField(help_text='Path of Building xml code')
     time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
