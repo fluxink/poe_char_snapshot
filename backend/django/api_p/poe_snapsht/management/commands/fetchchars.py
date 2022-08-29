@@ -18,4 +18,10 @@ class Command(BaseCommand):
         chars = asyncio.run(parse.start_fetch(new_list))
 
         for char in chars:
-            SnapShots.objects.create(character_id=Characters.objects.get(character=char[0][1]), character_info=char[1], items=char[2], passives=char[3])
+            SnapShots.objects.create(character_id=Characters.objects.get(
+                    character=char[0][1]),
+                    character_info=char[1],
+                    items=char[2],
+                    passives=char[3],
+                    xml_code=char[4]
+                )
