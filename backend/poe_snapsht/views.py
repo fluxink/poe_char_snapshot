@@ -88,4 +88,4 @@ class CreateSnapshots(APIView):
     def get(self, request):
         t = fetchchars.Command()
         t.handle()
-        return Response('Started')
+        return Response('Successful')

@@ -51,11 +51,11 @@ async def start_fetch(char_list):
         results = await asyncio.gather(*tasks)
     char_xmls = get_pob_xmls([[json.dumps(i.pop('info_items')), json.dumps(i['passives'])] for i in results])
     for char, xml in zip(results, char_xmls):
-        char['xml_code'] = _fetch_import_code_from_xml(xml)
-        char['stats'] = json.dumps(_fetch_stats(xml.encode('utf-8')))
+        char['xml_code'] = fetch_import_code_from_xml(xml)
+        char['stats'] = json.dumps(fetch_stats(xml.encode('utf-8')))
     return results
 
-def _fetch_import_code_from_xml(xml: str) -> bytes:
+def fetch_import_code_from_xml(xml: str) -> str:
     """Encodes and zips a Path Of Building import code.
 
     :return: Compressed XML build document."""
@@ -64,7 +64,7 @@ def _fetch_import_code_from_xml(xml: str) -> bytes:
     base64_encode = base64.urlsafe_b64encode(compressed_xml)
     return base64_encode.decode('utf-8')
 
-def _fetch_stats(xml: str):
+def fetch_stats(xml: str):
     xml = fromstring(xml)
     stats = {
     'full_dps': xml.find("Build").find("PlayerStat[@stat='FullDPS']").get('value'),
