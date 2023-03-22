@@ -134,6 +134,4 @@ CORS_ALLOWED_ORIGINS = [
 
 # PoB settings
 
-LUA_PATH = 'D:\WorkSpace\Projects_edu\PyPDF\LuaJIT\luajit.exe'
-
-POB_SRC = 'D:\WorkSpace\Projects_edu\PoESandBox\PathOfBuilding\src'
+POB_SRC = os.getenv('POB_SRC', '/app/PathOfBuilding/src')

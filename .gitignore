@@ -2,6 +2,8 @@ poex/
 *.sqlite3
 __pycache__/
 migrations/
+rsc/luajit/
+PathOfBuilding/
 *.pyc
 test.py
 
