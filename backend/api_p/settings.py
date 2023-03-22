@@ -131,3 +131,9 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3334',
     'http://localhost:5173'
 ]
+
+# PoB settings
+
+LUA_PATH = 'D:\WorkSpace\Projects_edu\PyPDF\LuaJIT\luajit.exe'
+
+POB_SRC = 'D:\WorkSpace\Projects_edu\PoESandBox\PathOfBuilding\src'

@@ -1,14 +1,11 @@
 import os
 import glob
+from django.conf import settings
 from subprocess import Popen
 
 
-LUA_PATH = 'D:\WorkSpace\Projects_edu\PyPDF\LuaJIT\luajit.exe'
-LUA_SCRIPT = 'D:\WorkSpace\Projects_edu\PoESandBox\PathOfBuilding\src\ProcessJson.lua'
-POB_SRC = 'D:\WorkSpace\Projects_edu\PoESandBox\PathOfBuilding\src'
-
 def send_chars(chars: list):
-    with open(os.path.join(POB_SRC, 'CharList.lua'), 'w') as file:
+    with open(os.path.join(settings.POB_SRC, 'CharList.lua'), 'w') as file:
         file.write(f'CharCount = {len(chars)}\n')
         file.write('CharList = {\n')
         for char in chars:
@@ -25,14 +22,19 @@ def get_pob_xmls(chars: list):
     character must be List[items, passives]
     """
     send_chars(chars)
-    Popen(args=[LUA_PATH, LUA_SCRIPT], cwd=POB_SRC).wait()
+
+    # Check if ProcessJson.lua exists
+    if not os.path.exists(''.join(settings.POB_SRC, '\ProcessJson.lua')):
+        raise FileNotFoundError('ProcessJson.lua not found')
+
+    Popen(args=[settings.LUA_PATH, ''.join(settings.POB_SRC, '\ProcessJson.lua')], cwd=settings.POB_SRC).wait()
     return read_xmls()
 
 def read_xmls():
     xmls = []
-    for file in glob.glob('*char.xml', root_dir=POB_SRC):
+    for file in glob.glob('*char.xml', root_dir=settings.POB_SRC):
         print(file)
-        with open(os.path.join(POB_SRC, file), 'r') as f:
+        with open(os.path.join(settings.POB_SRC, file), 'r') as f:
             xmls.append(f.read())
-        os.remove(os.path.join(POB_SRC, file))
+        os.remove(os.path.join(settings.POB_SRC, file))
     return xmls
