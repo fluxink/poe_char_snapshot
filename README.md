@@ -6,21 +6,32 @@ Fetch character from pathofexile.com, display inventory and some statistics with
 
 ## How to use
 
-### 1. Run DRF server
+### 1. Install dependencies
+
+```bash
+pip install -r requirements.txt
+npm install
+```
+
+In addition you need to specify paths to LuaJIT and [PoB](https://github.com/PathOfBuildingCommunity/PathOfBuilding) in settings.py
+
+And copy `rsc/ProcessJson.lua` to `PathOfBuilding/src/ProcessJson.lua`.
+
+### 2. Run DRF server
 
 ```bash
 cd backend
 python manage.py runserver
 ```
 
-### 2. Run Vue server
+### 3. Run Vue server
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-### 3. Open browser
+### 4. Open browser
 
 Open the address that appears in the terminal after you start the Vue server.
 
