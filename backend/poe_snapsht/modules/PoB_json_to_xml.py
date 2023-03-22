@@ -24,10 +24,10 @@ def get_pob_xmls(chars: list):
     send_chars(chars)
 
     # Check if ProcessJson.lua exists
-    if not os.path.exists(''.join(settings.POB_SRC, '\ProcessJson.lua')):
+    if not os.path.exists(os.path.join(settings.POB_SRC, 'ProcessJson.lua')):
         raise FileNotFoundError('ProcessJson.lua not found')
 
-    Popen(args=[settings.LUA_PATH, ''.join(settings.POB_SRC, '\ProcessJson.lua')], cwd=settings.POB_SRC).wait()
+    Popen(args=['luajit', os.path.join(settings.POB_SRC, 'ProcessJson.lua')], cwd=settings.POB_SRC).wait()
     return read_xmls()
 
 def read_xmls():
