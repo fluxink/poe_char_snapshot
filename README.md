@@ -14,7 +14,7 @@ cd frontend
 npm install
 ```
 
-In addition you need to specify paths to LuaJIT and [PoB](https://github.com/PathOfBuildingCommunity/PathOfBuilding) in settings.py
+In addition you need LuaJIT and [PathOfBuilding](https://github.com/PathOfBuildingCommunity/PathOfBuilding).
 
 And copy `rsc/ProcessJson.lua` to `PathOfBuilding/src/ProcessJson.lua`.
 
