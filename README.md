@@ -10,6 +10,7 @@ Fetch character from pathofexile.com, display inventory and some statistics with
 
 ```bash
 pip install -r requirements.txt
+cd frontend
 npm install
 ```
 
