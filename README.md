@@ -35,6 +35,23 @@ npm run dev
 
 Open the address that appears in the terminal after you start the Vue server.
 
-# Usage example
+## Usage example
 
 ![Usage example](rsc/example.webp)
+
+## Docker
+
+You can use docker to run the app.
+
+Clone the PoB repo into root of this project.
+```bash
+git clone https://github.com/PathOfBuildingCommunity/PathOfBuilding.git
+```
+Build the docker image.
+```bash
+docker build -t poe_snapshot .
+```
+Run docker compose.
+```bash
+docker-compose up
+```

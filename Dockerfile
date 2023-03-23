@@ -12,5 +12,4 @@ RUN pip3 install -r requirements.txt
 
 COPY ./backend/ .
 
-COPY rsc/xml.lua /usr/local/share/lua/5.1/xml.lua
 COPY PathOfBuilding/runtime/lua /usr/local/share/lua/5.1/
